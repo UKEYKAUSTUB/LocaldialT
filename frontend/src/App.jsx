@@ -43,9 +43,9 @@ const hidefooter = ["/category/hospitals"]
             <Route path="/" element={<Navigate to="/home" />} />
           </Routes>
         </main>
+        <Footer/>
 
-        {/* Footer */}
-        {!hidefooter.includes(location.pathname) && <Footer/> }
+        
       </div>
     </Router>
   );
