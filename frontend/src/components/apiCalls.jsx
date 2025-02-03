@@ -1,5 +1,5 @@
 import axios from "axios";
-import { API_PROUDCT_URL, LOGIN_URL, REGISTER_URL, RESET_PASSWORD_URL } from "../endPoint";
+import { API_PROUDCT_URL, LOGIN_URL, REGISTER_URL, Verification_URL, RESET_PASSWORD_URL } from "../endPoint";
 
 // Axios instance with timeout and default headers
 const axiosInstance = axios.create({
@@ -25,6 +25,24 @@ export const registerUser = async (userData) => {
     }
   }
 };
+
+
+export const VerifyUser = async (verificationCode) => {
+  try {
+    const response = await axiosInstance.post(Verification_URL, { code: verificationCode });
+    return response.data;
+  } catch (error) {
+    console.error("Error during Verification:", error);
+    if (error.response) {
+      throw new Error(error.response.data.message || "Verification failed");
+    } else if (error.request) {
+      throw new Error("No response from server. Please try again later.");
+    } else {
+      throw new Error(error.message || "Unexpected error occurred");
+    }
+  }
+};
+
 
 // Login User API Call
 export const loginUser = async (userData) => {

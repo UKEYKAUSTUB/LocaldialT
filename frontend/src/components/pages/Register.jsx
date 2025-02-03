@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { registerUser } from "../apiCalls"; // Import the API call function
-
+import {useNavigate} from "react-router-dom"
 const Register = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -8,6 +8,8 @@ const Register = () => {
   const [favoritecolor, setFavoritecolor] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -26,8 +28,10 @@ const Register = () => {
       const response = await registerUser(userData); // API call to register user
 
       if (response.success) {
-        alert("Registration successful! Please log in.");
-      } else {
+        alert("Please verify your email.");
+        navigate("/verifyEmail")
+      } 
+      else {
         setError(response.message || "Registration failed.");
       }
     } catch (err) {

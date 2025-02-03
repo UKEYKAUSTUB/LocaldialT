@@ -5,6 +5,9 @@ export const API_BASE_URL = `http://localhost:4000/api/user`; // Your backend UR
 // Registration Endpoint
 export const REGISTER_URL = `${API_BASE_URL}/register`;
 
+//Email Verification Endpoint
+export const Verification_URL = `${API_BASE_URL}/verifyEmail`;
+
 // Login Endpoint
 export const LOGIN_URL = `${API_BASE_URL}/login`;
 

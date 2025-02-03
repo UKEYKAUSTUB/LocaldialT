@@ -21,6 +21,14 @@ const userSchema = mongoose.Schema(
       type: String, // Stores the user's answer to the question
       required: true, // Make this required if necessary
     },
+    isVerified:{
+      type:Boolean,
+      default:false
+  },
+  resetPasswordToken:String,
+  resetPasswordExpiresAt:Date,
+  verficationToken:String,
+  verficationTokenExpiresAt:Date,
   },
   { timestamps: true }
 );

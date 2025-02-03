@@ -2,6 +2,8 @@ const bcrypt = require("bcryptjs"); // Ensure bcrypt is imported
 const { hashPassword } = require("../helpers/userHelper"); // Import helper function
 const User = require("../models/user");
 const jwt = require("jsonwebtoken"); // For generating JWT tokens
+const { sendVerificationEamil, senWelcomeEmail }=require ( "../middlewares/Email.js")
+const {generateTokenAndSetCookies}  =require ("../middlewares/GenerateToken.js")
 
 const registerUser = async (req, res) => {
   try {
@@ -26,6 +28,7 @@ const registerUser = async (req, res) => {
 
     // Hash the password
     const hashedPassword = await hashPassword(password);
+    const verficationToken= Math.floor(100000 + Math.random() * 900000).toString()
 
     // Create a new user instance
     const newUser = new User({
@@ -33,10 +36,14 @@ const registerUser = async (req, res) => {
       email,
       password: hashedPassword,
       favoritecolor,
+      verficationToken,
+      verficationTokenExpiresAt:Date.now() + 24 * 60 * 60 * 1000
     });
 
     // Save the user to the database
     const savedUser = await newUser.save();
+    generateTokenAndSetCookies(res,newUser._id)
+       await sendVerificationEamil(newUser.email,verficationToken)
 
     // Send success response without returning sensitive data
     res.status(201).json({
@@ -67,6 +74,30 @@ const registerUser = async (req, res) => {
     });
   }
 };
+const VerfiyEmail=async(req,res)=>{
+  try {
+      const {code}=req.body 
+      const user= await User.findOne({
+          verficationToken:code,
+          verficationTokenExpiresAt:{$gt:Date.now()}
+      })
+      if (!user) {
+          return res.status(400).json({success:false,message:"Inavlid or Expired Code"})
+              
+          }
+        
+   user.isVerified=true;
+   user.verficationToken=undefined;
+   user.verficationTokenExpiresAt=undefined;
+   await user.save()
+   await senWelcomeEmail(user.email,user.name)
+   return res.status(200).json({success:true,message:"Email Verifed Successfully"})
+         
+  } catch (error) {
+      console.log(error)
+      return res.status(400).json({success:false,message:"internal server error"})
+  }
+}
 
 // Login user (POST)
 const loginUser = async (req, res) => {
@@ -133,9 +164,10 @@ const resetPassword = async (req, res) => {
     if (!email || !securityAnswer || !newPassword) {
       return res.status(400).json({
           success: false,
-          message: "Email, security answer, and new password are required",
+          message: "Email, security answer,new password are required",
       });
   }
+  
 
     // Find the user by email
     const user = await User.findOne({ email });
@@ -160,6 +192,8 @@ const resetPassword = async (req, res) => {
 
   // Update the password
   user.password = hashedPassword;
+  
+
   await user.save();
 
   return res.status(200).json({
@@ -286,4 +320,4 @@ const deleteUser = async (req, res) => {
   }
 };
 
-module.exports = { registerUser, loginUser, resetPassword, getUsers, updateUser, deleteUser };
+module.exports = { registerUser,VerfiyEmail, loginUser, resetPassword, getUsers, updateUser, deleteUser };

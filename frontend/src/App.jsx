@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate,useLocation } from "re
 import HomePage from "./components/pages/HomePage";
 import AboutUs from "./components/pages/Aboutus";
 import Register from "./components/pages/Register";
+import VerifyEmail from "./components/pages/VerifyEmail";
 import Navbar from "./components/layout/Navbar";
 import Footer from "./components/layout/Footer";
 import Categories from "./components/pages/Categories";
@@ -37,6 +38,7 @@ const hidefooter = ["/category/hospitals"]
             <Route path="/resetPassword" element={<ResetPassword />} />
             <Route path="/categories" element={<Categories />} />
             <Route path="/category/:category" element={<CategoryDetailPage />} />
+            <Route path="/verifyEmail" element={<VerifyEmail />} />
             <Route path="/addform" element={<AddBusinessForm />} />
             <Route path="/businesscard" element={<BusinessCard/>} />
             <Route path="/services" element={<Services />} />
