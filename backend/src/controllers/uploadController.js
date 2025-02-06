@@ -17,6 +17,8 @@ const upload = multer({ storage });
 
 // Controller to handle file upload with multer
 const uploadFile = (req, res) => {
+  console.log("Received body:", req.body); 
+  console.log("Received file:", req.file);
   if (req.file) {
     res.status(200).json({
       message: 'File uploaded successfully',

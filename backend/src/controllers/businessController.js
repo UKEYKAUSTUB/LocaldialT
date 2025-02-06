@@ -42,8 +42,21 @@ const getBusinessById = async (req, res) => {
 
 // Create a business
 const createBusiness = async (req, res) => {
-  const { name, description, image, category } = req.body;
   try {
+    console.log("🔥 Request body:", req.body); // ✅ Debugging
+    console.log("🔥 File:", req.file); // ✅ Debugging
+
+    const { name, description, category, imageUrl } = req.body; // ✅ Get imageUrl if provided
+    let image;
+
+    if (req.file) {
+      image = req.file.path; // ✅ If file is uploaded, use its path
+    } else if (imageUrl) {
+      image = imageUrl; // ✅ Otherwise, use provided image URL
+    } else {
+      return res.status(400).json({ success: false, message: "Image is required" });
+    }
+
     const newBusiness = new Business({ name, description, image, category });
     const savedBusiness = await newBusiness.save();
     res.status(201).json({

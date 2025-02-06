@@ -2,13 +2,13 @@ import React, { useState } from "react";
 import { loginUser } from "../apiCalls";
 import { useNavigate } from "react-router-dom";
 
-const Login = () => {
+const Login = ({ setIsLoggedIn }) => {
   // State hooks for form data
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const Navigate = useNavigate();
+  const navigate = useNavigate();
 
   // Handle form submission
   const handleSubmit = async (e) => {
@@ -27,9 +27,10 @@ const Login = () => {
 
       if (response.success) {
         alert("Login successful!");
-        Navigate("/addform");
-        // Redirect to dashboard or another page
-        // window.location.href = '/dashboard'; // Example redirect
+        localStorage.setItem("token", response.token); // Save token
+        setIsLoggedIn(true); // Update state immediately
+        navigate("/home"); // Redirect after login
+
       } else {
         setError(response.message || "Invalid credentials.");
       }

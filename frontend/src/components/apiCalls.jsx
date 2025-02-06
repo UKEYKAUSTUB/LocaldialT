@@ -48,6 +48,13 @@ export const VerifyUser = async (verificationCode) => {
 export const loginUser = async (userData) => {
   try {
     const response = await axiosInstance.post(LOGIN_URL, userData);
+
+    if (response.data.success && response.data.token) {
+      localStorage.setItem("token", response.data.token); // Store token in localStorage
+    } else {
+      throw new Error(response.data.message || "Login failed");
+    }
+
     return response.data;
   } catch (error) {
     console.error("Error during login:", error);
@@ -79,14 +86,31 @@ export const resetPassword = async (resetData) => {
 };
 
 //API Call for the services(post)
-export const addServices = async(formData) =>{
+export const addServices = async (formData) => {
   try {
-    const response = await axiosInstance.post(API_PROUDCT_URL, formData);
+    // Get token from localStorage
+    const token = localStorage.getItem("token");
+    if (!token) {
+      throw new Error("User is not authenticated. Please log in.");
+    }
+       // ✅ Debugging: Print FormData before sending
+       for (const pair of formData.entries()) {
+        console.log(`${pair[0]}: ${pair[1]}`);
+      }
+
+    // Set Authorization header
+    const response = await axiosInstance.post(API_PROUDCT_URL, formData, {
+      headers: {
+        Authorization: `Bearer ${token}`, // Send token in headers
+        "Content-Type": "multipart/form-data", // Required for formData
+      },
+    });
+
     return response.data;
   } catch (error) {
     console.error("Error during service uploding:", error);
     if (error.response) {
-      throw new Error(error.response.data.message || "service upload failed");
+      throw new Error(error.response.data.message || "Service upload failed");
     } else if (error.request) {
       throw new Error("No response from server. Please try again later.");
     } else {
